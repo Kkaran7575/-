@@ -1,0 +1,31 @@
+name: Auto Government GR Scraper
+
+on:
+  schedule:
+    # दररोज रात्री १२ वाजता हा प्रोग्राम ऑटोमॅटिक चालेल
+    - cron: '0 0 * * *'
+  workflow_dispatch: # मॅन्युअली रन करण्यासाठी बटन
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repository Checkout करा
+      uses: actions/checkout@v3
+
+    - name: Python सेटअप करा
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Python Script चालवून डेटा स्क्रॅप करा
+      run: python scraper.py
+
+    - name: नवीन डेटा GitHub वर Push (Update) करा
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add data.json
+        git commit -m "Auto update GR & Notices" || exit 0
+        git push
